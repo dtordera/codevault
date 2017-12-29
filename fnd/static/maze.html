@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <title>Maze generator</title>
+    <style>
+    </style>
+      <script type="application/javascript">
+          // Lets draw the downloaded map
+          function DrawMap(p)
+          {
+              var w = p['width'];
+              var h = p['height'];
+              var m = p['map'];                            
+              var c = atob(p['map']);
+              var o = 0;
+              var d;
+              
+              var s = 3;
+              
+              var canvas = document.getElementById("_canvas");
+              canvas.width = w << s
+              canvas.height = h << s;
+              var ctx = canvas.getContext("2d");
+              ctx.strokeStyle = "#0011aa";
+                   
+              var lx,rx,ty,by;
+              for (var x=0;x<w;x++)
+                  for (var y=0;y<h;y++)
+                  {
+                        lx = x<<s;
+                        rx = (x+1)<<s;
+                        ty = y<<s;
+                        by = (y+1)<<s;
+                      
+                        d = ~c.charCodeAt(x + y*w);                      
+                      
+                        if (d & 1) { ctx.moveTo(rx, ty); ctx.lineTo(rx, by);  }
+                        if (d & 2) { ctx.moveTo(lx, ty); ctx.lineTo(rx, ty);  }                                                                         
+                        if (d & 4) { ctx.moveTo(lx, ty); ctx.lineTo(lx, by);  }          
+                        if (d & 8) { ctx.moveTo(lx, by); ctx.lineTo(rx, by);  }                             
+                  }
+              
+              ctx.stroke();
+                            
+              document.getElementById("destination").innerHTML = w + ' ' + h + ' ' + m;                          
+          }
+       	  
+	  // call service to retrieve a maze
+          function getmaze()
+          {
+              var w = document.getElementById("width").value;
+              var h = document.getElementById("height").value;
+              
+              console.log(w + " " + h);
+              
+              var uri = "http://vps264757.ovh.net/GameFactoryService/resources/maze?w=" +w + "&h=" + h;
+              var r = new XMLHttpRequest();              
+              r.onreadystatechange = 
+                  function() {
+                    if (r.readyState == 4)
+                        if (r.status == 200) 
+                            DrawMap(JSON.parse(r.response));                        
+                        else
+                            window.alert("Call failed!");
+                  }
+              r.open("GET",uri,true);
+              r.send(null);
+          }
+          
+      </script>
+  </head>
+  <body bgcolor="">
+      <input id="width" type="number" value="50" title="width"></input><br>
+      <input id="height" type="number" value="50"></input><br><br>      
+      <button type="button" onclick="getmaze()">Get Maze!</button><br><br>
+      <a id="destination" title="response">nothing loaded yet...</a><br><br>
+      <canvas id="_canvas"  style="border:1px solid #d3d3d3;" width="0" height="0"></canvas><br><br>
+  </body>
+</html>

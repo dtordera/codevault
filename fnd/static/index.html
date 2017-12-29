@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>ValorProfs Technical Test. CRUD API consumption</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script type="text/javascript" src="sha256.js"></script>
+        <script type="text/javascript" src="global.js"></script>                
+        <script type="text/javascript" src="utility.js"></script>
+        <script type="text/javascript" src="access.js"></script>
+        <script type="text/javascript" src="crud.js"></script>        
+    </head>
+    <body>
+        <div>
+            <label id="log">Initializing...</label><br><br><br>
+            <div id="initial" class="hidden">
+                <label id="iinfo" type="text">Please identify yourself:</label><br>
+                <input id="iuser" type="text" placeholder="user"><br>
+                <input id="ipass" type="text" placeholder="pass"><br><br>
+                <button id="blogin" onclick="validateaccess()">login</button>
+                <button id="blogout" onclick="logout()">logout</button><br>
+                <label  id="log2"></label>
+            </div>          
+            <div id="crud" class="hidden" >
+                <br><br>
+                <table id="producttable"></table><br><br>
+                <label id="lid" >skuid</label>
+                <input id="ename" type="text" Style="width:300px" placeholder="name">
+                <input id="epric" type="number" placeholder="price" Style="width:100px">
+                <input id="eavai" type="checkbox" placeholder="available">available&nbsp;
+                <input id="edesc" type="text" Style="width:500px" placeholder="description">                
+                <br><br>                                                
+                <button id="refresh" onclick="refreshlist()">refresh</button>
+                <button id="clear" onclick="clearedits()" >clear</button>                
+                <button id="detail" onclick='rowclick(document.getElementById("lid").innerHtml)'>detail</button>
+                <button id="update" onclick="updateproduct()">update</button>
+                <button id="new" onclick="newproduct()">new</button>
+                <button id="delete" onclick="deleteproduct()">delete</button>                
+                <br><br>
+                <label Style="color:red" id="lastresult"></label>                
+            </div>
+        </div>
+        <script>
+            bootstrap();
+        </script>
+    </body>
+</html>

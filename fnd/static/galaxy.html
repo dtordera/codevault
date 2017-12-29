@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <title>Galaxy generator</title>
+    <style>
+    </style>
+      <script type="application/javascript">
+          // Lets draw galaxy!          
+            function DrawGalaxy(p)
+            {
+                var radius = p['radius'];
+                var stars = p['stars'];    
+                var height = p['height'];
+                height = height*2 + 20;
+                var tickns = p['tickns'];                            
+                var starsnumber = p['starsnumber'];
+
+                var canvas = document.getElementById("_canvas");
+                canvas.width = radius*2;
+                canvas.height = height;
+                var ctx = canvas.getContext("2d");
+                
+                ctx.fillStyle = "#000";
+                ctx.fillRect(1,1,canvas.width, canvas.height);                
+                ctx.fillStyle = "#fff";                                
+                
+                for (var i=0;i<starsnumber;i++)
+                {
+                    s = stars[i];  
+                    var c = s.m*255;
+                    var a = 1;
+                    ctx.fillStyle = "rgba(" + c + "," + c + ", " + c + "," + a + ")";                      
+                    ctx.fillRect(s.r+radius,s.z+height/2,1,1);                
+                }
+              
+                ctx.stroke(); // paint canvas...                            
+                document.getElementById("destination").innerHTML = "Loaded. " + starsnumber + " generated on " + tickns+ " ns";                          
+          }
+          
+          // Lets draw galaxy!          
+            function DrawGalaxy2(p)
+            {
+                var radius = p['radius'];
+                var stars = p['stars'];    
+                var tickns = p['tickns'];                            
+                var starsnumber = p['starsnumber'];
+
+                var canvas = document.getElementById("_canvas2");
+                canvas.width = radius*2;
+                canvas.height = radius*2;
+                var ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#000";
+                ctx.fillRect(1,1,canvas.width, canvas.height);                
+                
+                console.log(starsnumber);
+                
+                for (var i=0;i<starsnumber;i++)
+                {
+                    s = stars[i];            
+                    var c = s.m*128+128;
+                    var a = 0.8;
+                    ctx.fillStyle = "rgba(" + c + "," + c + ", " + c + "," + a + ")";  
+                    ctx.fillRect(s.r*Math.cos(s.p)+radius,s.r*Math.sin(s.p) + radius,1,1);                
+                }
+              
+                ctx.stroke(); // paint canvas...                            
+          }          
+          function getgalaxy() 
+          {
+              var r = document.getElementById("radius").value;
+              var t = document.getElementById("starsnumber").value;              
+              var d = document.getElementById("deviation").value;
+              var a = document.getElementById("anglevariation").value;
+              
+              // doing the call to service...
+              var uri = "http://vps264757.ovh.net//GameFactoryService/resources/galaxy?"+ 
+                  "r=" +r + "&t=" + t + "&d=" + d + "&a=" + a;
+              var r = new XMLHttpRequest();              
+              r.onreadystatechange = 
+                  function() {
+                    if (r.readyState == 4)
+                        if (r.status == 200) 
+                        {
+                            console.log(r.response);
+                            DrawGalaxy(JSON.parse(r.response));                        
+                            DrawGalaxy2(JSON.parse(r.response));
+                        }
+                        else // ooops...
+                            window.alert("Call failed!");
+                  }
+              r.open("GET",uri,true);
+              r.send(null);
+          }
+          
+      </script>
+  </head>
+  <body bgcolor="">
+      <input id="radius" type="number" value="500" title="Radius">Radius</input><br>
+      <input id="starsnumber" type="number" value="100000" title="Stars number">Total stars number</input><br>
+      <input id="deviation" type="number" value="10" title="Deviation">Deviation</input><br>
+      <input id="anglevariation" type="number" value="30" title="Anglevariation">AngleVariation</input><br><br>
+      <button type="button" onclick="getgalaxy()">Get galaxy</button><br><br>
+      <a id="destination" title="response">nothing loaded yet...</a><br><br>
+      <canvas id="_canvas"  style="border:1px solid #d3d3d3;" width="0" height="0"></canvas><br><br>
+      <canvas id="_canvas2"  style="border:1px solid #d3d3d3;" width="0" height="0"></canvas><br><br>
+  </body>
+</html>

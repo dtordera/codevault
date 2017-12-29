@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>maze 3D</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="./three.js"></script>
+		<script src="./Projector.js"></script>
+		<script src="./CanvasRenderer.js"></script>
+		<script src="./stats.js"></script>
+        <script src="./OrbitControls.js"></script>
+		<script>
+            
+            // Lets draw map!
+            function DrawMap(p, scene)
+            {
+                var w = p['width'];
+                var h = p['height'];
+                var m = p['map'];                            
+                var c = atob(p['map']);
+                var o = 0;
+                var d;
+                
+				var material = new THREE.MeshLambertMaterial( { color: 0xffffff, overdraw: 0.5 } );         
+                
+                var geometry = new THREE.BoxGeometry(0,0,0);
+                fullmesh = new THREE.Mesh(geometry, material);
+                
+                for (var x=0;x<w;x++)
+                for (var y=0;y<h;y++)
+                {                
+                    d = ~c.charCodeAt(x + y*w); // making NOT. Easier and faster (not to compare to exact number each time, just true/false)
+                                                                                                   
+                    // Let's masking to bits 1,2,3,4, and depending on result, paint a wall or not.
+                    if (d & 1) { paintRightWall(x,y,fullmesh, material); }
+                    if (d & 2) { paintUpWall(x,y,fullmesh, material);    }                 
+                    if (d & 4) { paintLeftWall(x,y,fullmesh, material);  }          
+                    if (d & 8) { paintDownWall(x,y,fullmesh, material);  }                                                         
+                }                       
+                
+                scene.add(fullmesh);
+            }           
+            
+            // generate a 'cube' mesh
+            function getCube(x,y,geometry,material)
+            {
+                var cube = new THREE.Mesh(geometry, material);
+                
+                cube.position.x = x*50 - 500 + 25;
+                cube.position.z = y*50 - 500 + 25;
+                cube.position.y = 40;
+                
+                return cube;
+            }
+            
+            function getHWall(x,y, material)
+            {
+                var geometry = new THREE.BoxGeometry(60,80,10);
+                return getCube(x,y,geometry, material);
+            }
+            
+            function getVWall(x,y,material)
+            {
+                var geometry = new THREE.BoxGeometry(10,80,60);
+                return getCube(x,y,geometry, material);
+            }
+            
+            function paintRightWall(x,y,mesh, material)
+            {
+                var VWall = getVWall(x,y,material);
+                VWall.position.x += 25;
+                mesh.add(VWall);
+            }
+            
+            function paintLeftWall(x,y,mesh, material)
+            {
+                var VWall = getVWall(x,y,material);
+                VWall.position.x -= 25;
+                mesh.add(VWall);
+            }
+            
+            function paintUpWall(x,y,mesh, material)
+            {
+                var HWall = getHWall(x,y,material);
+                HWall.position.z -= 25;
+                mesh.add(HWall);
+            }
+            
+            function paintDownWall(x,y,mesh, material)
+            {
+                var HWall = getHWall(x,y,material);
+                HWall.position.z += 25;
+                mesh.add(HWall);
+            }            
+            // calling service to retrieve a maze. Remember each byte it's a cell, and of each byte
+            // 1st bit means right corridor open
+            // 2nd bit means up corridor open
+            // 3rd bit means left corridor open 
+            // 4th one menas down corridor open            
+            function getmaze(scene) 
+            {
+                // doing the call to service...
+                var uri = "http://vps264757.ovh.net/GameFactoryService/resources/maze?w=20&h=20";
+                var r = new XMLHttpRequest();              
+                r.onreadystatechange = 
+                function() {
+                    if (r.readyState == 4)
+                    if (r.status == 200) 
+                        DrawMap(JSON.parse(r.response), scene);                        
+                    else // ooops...
+                        window.alert("Call failed!");
+                }
+                r.open("GET",uri,true);
+                r.send(null);
+            }            
+            
+			var container, stats;
+			var camera, scene, renderer;
+            var fullmesh;
+			var frustumSize = 1000;
+			var controls;
+            var play = true;
+            var light1, light2, light3; 
+            
+            function toggle()
+            {
+                play = !play;
+            }
+			init();
+			animate();
+            
+            function regenerate(scene)
+            {
+                console.log("here");
+                scene.remove(fullmesh);
+                scene.remove(light1);
+                scene.remove(light2);
+                scene.remove(light3);
+                getmaze(scene);
+                generatelights();
+            }
+            
+            function generatelights()
+            {			
+                light1 = new THREE.DirectionalLight( Math.random() * 0xffffff );
+				light1.position.x = Math.random() + 0.5;
+				light1.position.y = Math.random() + 0.5;
+				light1.position.z = Math.random() + 0.5;
+				light1.position.normalize();
+				scene.add(light1);
+				light2 = new THREE.DirectionalLight( Math.random() * 0xffffff );
+				light2.position.x = Math.random() - 0.5;
+				light2.position.y = Math.random() - 0.5;
+				light2.position.z = Math.random() - 0.5;
+				light2.position.normalize();
+                scene.add(light2);
+				light3 = new THREE.DirectionalLight( Math.random() * 0xffffff );
+				light3.position.x = Math.random() - 1;
+				light3.position.y = Math.random() - 1;
+				light3.position.z = Math.random() - 1;
+				light3.position.normalize();
+                scene.add(light3);                         
+            }
+			function init() {
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				var info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '10px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+                info.innerHTML = '<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - maze 3D<br>Use mouse LEFT button for orbit, MIDDLE for zoom<br><input type="checkbox" onclick="toggle()">stop/play</input>   <button onclick="regenerate(scene)">Generate maze</button>';
+				container.appendChild(info);
+				var aspect = window.innerWidth / window.innerHeight;
+/*				camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 2000);*/
+                console.log(aspect);
+				camera = new THREE.PerspectiveCamera( 60, aspect, 1, 10000);                          
+				camera.position.y = 500;
+								
+                controls = new THREE.OrbitControls(camera);				
+				
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xf0f0f0 );
+				// Grid
+				var gridHelper = new THREE.GridHelper( 1000, 20 );
+				scene.add( gridHelper );
+				// Add walls from maze...                
+                getmaze(scene);
+				// Lights
+				var ambientLight = new THREE.AmbientLight( Math.random() * 0x10 );
+				scene.add( ambientLight );
+	        
+                generatelights();
+                
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize(window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				stats = new Stats();
+				container.appendChild( stats.dom );
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			function onWindowResize() {
+				var aspect = window.innerWidth / window.innerHeight;
+                    
+                camera.aspect = window.innerWidth/ window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			function animate() {
+				requestAnimationFrame( animate );
+				stats.begin();
+				render();
+				stats.end();
+			}
+			function render() {
+				var timer = Date.now() * 0.0001;
+                if (play)
+                {
+				    camera.position.x = Math.cos( timer ) * 1000;
+				    camera.position.z = Math.sin( timer ) * 1000;
+                }
+                
+				camera.lookAt( scene.position );
+				renderer.render( scene, camera );
+			}
+		</script>  	
+</body></html>
