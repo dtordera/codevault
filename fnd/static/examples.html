@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+         <style>
+            body
+            {
+                background-color: #fff;
+				margin: 0px;
+				height: 100%;
+				color: #555;
+				font-family: 'arial';
+				font-size: 15px;
+				line-height: 18px;
+				overflow: hidden;
+            }
+            #panel
+            {
+                padding-left:15px;            
+				position: fixed;
+				left: 0px;
+				width: 280px;
+				height: 100%;
+				overflow: auto;
+				background: #2F3F5F;
+                box-shadow: 0 0 30px #1F2F4F;
+            }
+             
+             h2{
+                 color:aliceblue; 
+                 text-shadow: 0 0 3px #00f, 0 0 5px bisque;
+             }
+             
+             a
+             {   
+                 align-content:center;
+                 display:block;
+                 box-sizing:content-box;
+                 width:250px;
+                 height:20px;
+                 color:navajowhite;    
+                 padding-left:10px;
+
+                 text-decoration:none;
+             }
+             
+             a:hover
+             {
+                 background:#1F2F4F;
+                 color:orange;
+                 border-radius:5px;
+             }
+             
+            #viewer
+            {
+				position: absolute;
+				border: 0px;
+				left: 285px;
+				width: calc(100% - 295px);
+				height: 100%;
+				overflow: auto;
+            }
+         </style>
+    </head>
+    <body>
+        <div id="panel">
+            <h2>Examples on David's Code Vault posts</h2>
+            <br>
+            <a class="link" href="https://www.davidscodevault.com" target="viewer">David's Code Vault</a>
+            <br>
+            <a class="link" href="http://vps355126.ovh.net:8081/swagger-ui.html" target="viewer">Codevault backend (CVBE) API</a>
+            <br>            
+            <a class="link" href="http://vps355126.ovh.net/galaxy.html" target="viewer">Galaxy</a>            
+            <a class="link" href="http://vps355126.ovh.net/galaxy3d.html" target="viewer">Galaxy 3D</a>       
+            <a class="link" href="http://vps355126.ovh.net:8081/galaxy?r=500&t=1000&a=20&d=20" target="viewer">Call to CVBE API Galaxy method</a><br>        
+            <a class="link" href="http://vps355126.ovh.net/maze.html" target="viewer">Maze</a>                        
+            <a class="link" href="http://vps355126.ovh.net/maze3d.html" target="viewer">Maze 3D</a>                                    
+            <a class="link" href="http://vps355126.ovh.net:8081/maze?w=100&h=100" target="viewer">Call to CVBE API Maze method</a><br>                                                
+            <a class="link" href="http://vps264757.ovh.net/DiamondSquareAlgorithm.aspx" target="viewer">Diamond Square Algorithm</a>
+            <a class="link" href="http://vps264757.ovh.net/RaisingHighMaps.aspx" target="viewer">Raising High maps</a><br>
+            <a class="link" href="http://vps264757.ovh.net/PotentialEnergy.aspx" target="viewer">Potential Energy</a>                          
+            <a class="link" href="http://vps264757.ovh.net/PotentialEnergyColored.aspx" target="viewer">Potential Energy (not so gray)</a><br>
+            <a class="link" href="http://vps264757.ovh.net/FireEffect.aspx" target="viewer">Fire Effect</a>                                       
+            <br>
+            <a class="link" href="http://vps355126.ovh.net/cv.html" target="viewer">About myself</a>
+            <br>
+            
+        </div>
+        <iframe id="viewer" name="viewer" src="http://vps264757.ovh.net/PotentialEnergyColored.aspx" allowfullscreen="" allowvr="" onmousewheel="" Style="padding-left:10px">
+            <p>Your browser does not support iframes.</p>
+        </iframe>                        
+    </body>
+</html>
